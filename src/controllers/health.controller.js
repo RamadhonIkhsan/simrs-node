@@ -1,5 +1,6 @@
 const healthService = require('../services/health.service');
-const { successResponse, errorResponse } = require('../utils/response');
+const AppError = require('../utils/AppError');
+const { successResponse } = require('../utils/response');
 
 class HealthController {
   async checkHealth(req, res, next) {
@@ -7,11 +8,7 @@ class HealthController {
       const { isHealthy, healthData } = await healthService.getHealthStatus();
 
       if (!isHealthy) {
-        return res.status(503).json({
-          success: false,
-          message: 'Service degraded: Database connection issue',
-          data: healthData,
-        });
+        throw new AppError(503, 'Service degraded: Database connection issue', healthData);
       }
 
       return successResponse(res, {

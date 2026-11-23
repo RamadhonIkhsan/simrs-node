@@ -5,8 +5,8 @@ const morgan = require('morgan');
 
 const env = require('./config/env');
 const apiRoutes = require('./routes');
-const notFoundHandler = require('./middlewares/not-found.middleware');
-const errorHandler = require('./middlewares/error.middleware');
+const notFoundHandler = require('./middlewares/notFoundHandler');
+const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
@@ -35,10 +35,10 @@ app.get('/', (_req, res) => {
 // API Routes
 app.use('/api', apiRoutes);
 
-// 404 Handler
+// 404 Handler for undefined routes
 app.use(notFoundHandler);
 
-// Global Error Handler
+// Centralized Global Error Handler (must be last middleware)
 app.use(errorHandler);
 
 module.exports = app;
