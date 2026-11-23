@@ -14,7 +14,7 @@ class DashboardController {
 
       return successResponse(res, {
         statusCode: 200,
-        message: 'Ringkasan dashboard berhasil dimuat',
+        message: 'Berhasil',
         data,
         meta: {
           period: {

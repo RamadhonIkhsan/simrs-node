@@ -3,24 +3,24 @@
  *
  * Success format:
  * {
- *   success: true,
- *   message: string,
+ *   rc: number,        // e.g. 200
+ *   rm: string,        // e.g. 'Berhasil'
  *   data: any,
  *   meta?: object
  * }
  *
  * Error format:
  * {
- *   success: false,
- *   message: string,
+ *   rc: number,        // e.g. 400, 401, 403, 404, 422, 500
+ *   rm: string,        // e.g. 'Pesan error'
  *   errors?: array|object
  * }
  */
 
-const successResponse = (res, { statusCode = 200, message = 'Success', data = null, meta = undefined }) => {
+const successResponse = (res, { statusCode = 200, message = 'Berhasil', data = null, meta = undefined }) => {
   const payload = {
-    success: true,
-    message,
+    rc: statusCode,
+    rm: message,
     data,
   };
 
@@ -31,10 +31,10 @@ const successResponse = (res, { statusCode = 200, message = 'Success', data = nu
   return res.status(statusCode).json(payload);
 };
 
-const errorResponse = (res, { statusCode = 500, message = 'Internal Server Error', errors = undefined }) => {
+const errorResponse = (res, { statusCode = 500, message = 'Terjadi kesalahan pada server', errors = undefined }) => {
   const payload = {
-    success: false,
-    message,
+    rc: statusCode,
+    rm: message,
   };
 
   if (errors !== undefined && errors !== null) {

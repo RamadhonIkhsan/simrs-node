@@ -4,7 +4,7 @@ class AuthController {
   verify(req, res) {
     return successResponse(res, {
       statusCode: 200,
-      message: 'Token berhasil diverifikasi',
+      message: 'Berhasil',
       data: req.user,
     });
   }

@@ -10,24 +10,24 @@ const handlePostgreSQLError = (err) => {
     case '23505': // unique_violation
       return {
         statusCode: 409,
-        message: 'Duplicate entry detected',
+        message: 'Duplikasi data terdeteksi',
         errors: err.detail ? [{ detail: err.detail }] : undefined,
       };
     case '23503': // foreign_key_violation
       return {
         statusCode: 400,
-        message: 'Foreign key constraint violation: referenced resource does not exist',
+        message: 'Pelanggaran relasi database: data referensi tidak ditemukan',
         errors: err.detail ? [{ detail: err.detail }] : undefined,
       };
     case '23502': // not_null_violation
       return {
         statusCode: 400,
-        message: `Missing required field: ${err.column || 'unknown'}`,
+        message: `Field wajib belum diisi: ${err.column || 'unknown'}`,
       };
-    case '22P02': // invalid_text_representation (e.g. invalid syntax for integer/uuid)
+    case '22P02': // invalid_text_representation
       return {
         statusCode: 400,
-        message: 'Invalid input syntax for database type',
+        message: 'Format input tidak valid untuk tipe data database',
       };
     case '08001':
     case '08006':
@@ -36,7 +36,7 @@ const handlePostgreSQLError = (err) => {
     case 'ETIMEDOUT':
       return {
         statusCode: 503,
-        message: 'Database service is currently unavailable',
+        message: 'Layanan database sedang tidak tersedia',
       };
     default:
       return null;
@@ -48,7 +48,7 @@ const handlePostgreSQLError = (err) => {
  */
 const errorHandler = (err, req, res, _next) => {
   let statusCode = err.statusCode || 500;
-  let message = err.message || 'Internal Server Error';
+  let message = err.message || 'Terjadi kesalahan pada server';
   let errors = err.errors !== undefined ? err.errors : null;
 
   // 1. AppError (Custom operational application error)
@@ -60,9 +60,8 @@ const errorHandler = (err, req, res, _next) => {
   // 2. Zod Validation Error
   else if (err instanceof ZodError || err.name === 'ZodError') {
     statusCode = 422;
-    message = 'Validation error';
+    message = 'Validasi gagal';
     errors = err.issues.map((issue) => {
-      // Normalize field path, stripping outer wrapper if present (e.g. "body.name" -> "name")
       let fieldPath = issue.path.join('.');
       if (fieldPath.startsWith('body.') || fieldPath.startsWith('query.') || fieldPath.startsWith('params.')) {
         fieldPath = fieldPath.split('.').slice(1).join('.');
@@ -76,10 +75,10 @@ const errorHandler = (err, req, res, _next) => {
   // 3. JWT Errors
   else if (err.name === 'JsonWebTokenError') {
     statusCode = 401;
-    message = 'Invalid authentication token';
+    message = 'Token otentikasi tidak valid';
   } else if (err.name === 'TokenExpiredError') {
     statusCode = 401;
-    message = 'Authentication token has expired';
+    message = 'Token otentikasi telah kedaluwarsa';
   }
   // 4. PostgreSQL Errors
   else if (err.code) {
@@ -100,7 +99,7 @@ const errorHandler = (err, req, res, _next) => {
 
   // Fallback in production: do not leak unexpected internal errors or stack traces
   if (statusCode === 500 && process.env.NODE_ENV === 'production') {
-    message = 'Internal Server Error';
+    message = 'Terjadi kesalahan internal pada server';
     errors = null;
   } else if (statusCode === 500 && process.env.NODE_ENV !== 'production' && !errors) {
     errors = {

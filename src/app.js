@@ -26,9 +26,13 @@ app.use(express.urlencoded({ extended: true }));
 // Root info route
 app.get('/', (_req, res) => {
   res.json({
-    name: 'SIMRS Node Service',
-    status: 'running',
-    docs: '/api/health',
+    rc: 200,
+    rm: 'Berhasil',
+    data: {
+      name: 'SIMRS Node Service',
+      status: 'running',
+      docs: '/api/health',
+    },
   });
 });
 

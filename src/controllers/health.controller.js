@@ -8,12 +8,12 @@ class HealthController {
       const { isHealthy, healthData } = await healthService.getHealthStatus();
 
       if (!isHealthy) {
-        throw new AppError(503, 'Service degraded: Database connection issue', healthData);
+        throw new AppError(503, 'Koneksi database bermasalah', healthData);
       }
 
       return successResponse(res, {
         statusCode: 200,
-        message: 'SIMRS Node Service is healthy',
+        message: 'Berhasil',
         data: healthData,
       });
     } catch (err) {
