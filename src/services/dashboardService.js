@@ -32,6 +32,105 @@ class DashboardService {
       distribusi_status_pembayaran: paymentDistribution,
     };
   }
+
+  /**
+   * 1. Drill-down patient visits
+   */
+  async getDetailedVisits({ startDate, endDate, search, poliId, dokterId, page, limit }) {
+    const { rows, total } = await dashboardRepository.getDetailedVisits({
+      startDate,
+      endDate,
+      search,
+      poliId,
+      dokterId,
+      page,
+      limit,
+    });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total_data: total,
+        total_pages: Math.ceil(total / limit) || 1,
+      },
+    };
+  }
+
+  /**
+   * 2. Drill-down medical actions/procedures
+   */
+  async getDetailedActions({ startDate, endDate, search, poliId, dokterId, page, limit }) {
+    const { rows, total } = await dashboardRepository.getDetailedActions({
+      startDate,
+      endDate,
+      search,
+      poliId,
+      dokterId,
+      page,
+      limit,
+    });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total_data: total,
+        total_pages: Math.ceil(total / limit) || 1,
+      },
+    };
+  }
+
+  /**
+   * 3. Drill-down medicines usage
+   */
+  async getDetailedMedicines({ startDate, endDate, search, poliId, page, limit }) {
+    const { rows, total } = await dashboardRepository.getDetailedMedicines({
+      startDate,
+      endDate,
+      search,
+      poliId,
+      page,
+      limit,
+    });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total_data: total,
+        total_pages: Math.ceil(total / limit) || 1,
+      },
+    };
+  }
+
+  /**
+   * 4. Drill-down bills & payment status
+   */
+  async getDetailedPayments({ startDate, endDate, search, poliId, paymentStatus, page, limit }) {
+    const { rows, total } = await dashboardRepository.getDetailedPayments({
+      startDate,
+      endDate,
+      search,
+      poliId,
+      paymentStatus,
+      page,
+      limit,
+    });
+
+    return {
+      data: rows,
+      pagination: {
+        page,
+        limit,
+        total_data: total,
+        total_pages: Math.ceil(total / limit) || 1,
+      },
+    };
+  }
 }
 
 module.exports = new DashboardService();
